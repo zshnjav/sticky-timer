@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sticky Timer Playback</string>
+    <string name="tile_label">Sticky Timer</string>
+    <string name="listener_label">Sticky Session Listener</string>
+    <string name="notification_channel_name">Sticky Timer</string>
+    <string name="notification_channel_description">Bedtime sticky timer playback controls</string>
+    <string name="notification_title">Sticky timer active</string>
+    <string name="notification_stop">Stop</string>
+    <string name="notification_text_idle">Waiting for playback</string>
+    <string name="notification_text_running">Session running</string>
+    <string name="notification_text_fading">Fading out</string>
+    <string name="notification_text_recent_stop">Paused, press play to continue</string>
+    <string name="notification_text_expired">Max window reached</string>
+    <string name="settings_title">Sticky Timer Playback</string>
+    <string name="settings_subtitle">Bedtime sticky sleep timer for Bluetooth listening.</string>
+    <string name="toggle_title">Sticky mode</string>
+    <string name="toggle_on">On</string>
+    <string name="toggle_off">Off</string>
+    <string name="notification_access_required">Notification access is required for cross-app playback control.</string>
+    <string name="open_notification_access">Open notification access settings</string>
+    <string name="setting_session_duration">Session duration</string>
+    <string name="setting_fade_duration">Fade length</string>
+    <string name="setting_reengagement_window">Re-engagement window</string>
+    <string name="setting_max_window">Max active window</string>
+    <string name="phase_off">Off</string>
+    <string name="phase_on_idle">On, waiting for playback</string>
+    <string name="phase_session_running">Session running</string>
+    <string name="phase_fading">Fading</string>
+    <string name="phase_stopped_recently">Paused, resume to re-arm</string>
+    <string name="phase_expired">Expired</string>
+    <string name="status_enabled">Enabled</string>
+    <string name="status_disabled">Disabled</string>
+</resources>
