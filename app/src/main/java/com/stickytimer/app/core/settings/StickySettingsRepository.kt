@@ -29,7 +29,7 @@ class StickySettingsRepository(private val context: Context) {
     }
 
     suspend fun updateSessionDurationSec(value: Int) {
-        context.stickyDataStore.edit { it[Keys.SESSION_DURATION_SEC] = value.coerceIn(60, 1800) }
+        context.stickyDataStore.edit { it[Keys.SESSION_DURATION_SEC] = value.coerceIn(10, 1800) }
     }
 
     suspend fun updateFadeDurationSec(value: Int) {

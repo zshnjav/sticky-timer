@@ -12,7 +12,7 @@ data class StickySettings(
     val maxActiveWindowMs: Long = maxActiveWindowMin * 60_000L
 
     companion object {
-        const val DEFAULT_SESSION_DURATION_SEC = 5 * 60
+        const val DEFAULT_SESSION_DURATION_SEC = 10
         const val DEFAULT_FADE_DURATION_SEC = 10
         const val DEFAULT_REENGAGEMENT_WINDOW_SEC = 30
         const val DEFAULT_MAX_ACTIVE_WINDOW_MIN = 90

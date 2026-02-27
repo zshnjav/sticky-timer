@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class StickyForegroundService : Service() {
 
@@ -118,11 +119,21 @@ class StickyForegroundService : Service() {
         return when (snapshot.phase) {
             StickyPhase.OFF -> getString(R.string.notification_text_idle)
             StickyPhase.ON_IDLE -> getString(R.string.notification_text_idle)
-            StickyPhase.SESSION_RUNNING -> getString(R.string.notification_text_running)
+            StickyPhase.SESSION_RUNNING -> getString(
+                R.string.notification_text_running_with_remaining,
+                formatRemainingSession(snapshot.remainingSessionMs)
+            )
             StickyPhase.FADING -> getString(R.string.notification_text_fading)
             StickyPhase.STOPPED_RECENTLY -> getString(R.string.notification_text_recent_stop)
             StickyPhase.EXPIRED -> getString(R.string.notification_text_expired)
         }
+    }
+
+    private fun formatRemainingSession(remainingMs: Long): String {
+        val totalSeconds = (remainingMs.coerceAtLeast(0L) + 999L) / 1000L
+        val minutes = totalSeconds / 60L
+        val seconds = totalSeconds % 60L
+        return String.format(Locale.getDefault(), "%d:%02d", minutes, seconds)
     }
 
     private fun createNotificationChannel() {

@@ -9,6 +9,7 @@
     <string name="notification_stop">Stop</string>
     <string name="notification_text_idle">Waiting for playback</string>
     <string name="notification_text_running">Session running</string>
+    <string name="notification_text_running_with_remaining">Session running, %1$s to fade</string>
     <string name="notification_text_fading">Fading out</string>
     <string name="notification_text_recent_stop">Paused, press play to continue</string>
     <string name="notification_text_expired">Max window reached</string>
