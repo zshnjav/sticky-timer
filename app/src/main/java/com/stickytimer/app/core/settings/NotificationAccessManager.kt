@@ -13,7 +13,7 @@ class NotificationAccessManager(private val context: Context) {
     fun hasAccess(): Boolean {
         val enabledListeners = Settings.Secure.getString(
             context.contentResolver,
-            Settings.Secure.ENABLED_NOTIFICATION_LISTENERS
+            "enabled_notification_listeners"
         ) ?: return false
         return enabledListeners.split(':').any { flattened ->
             ComponentName.unflattenFromString(flattened) == componentName
