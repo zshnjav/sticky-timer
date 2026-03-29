@@ -1,8 +1,35 @@
+# Android Studio / IntelliJ
 *.iml
-.gradle/
-/local.properties
 /.idea/
+/.vscode/
+
+# Gradle / Kotlin build state
+/.gradle/
+/.kotlin/
 /build/
-/captures/
+**/build/
 /.cxx/
-app/build/
+/.externalNativeBuild/
+/captures/
+
+# Android local machine state
+/local.properties
+/.android/
+/.android-user/
+
+# Build artifacts
+*.apk
+*.aab
+*.ap_
+*.log
+hs_err_pid*
+
+# Signing material and local release config
+*.jks
+*.keystore
+keystore.properties
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+Desktop.ini

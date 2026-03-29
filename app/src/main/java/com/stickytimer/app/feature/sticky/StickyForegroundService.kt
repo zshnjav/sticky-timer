@@ -104,15 +104,19 @@ class StickyForegroundService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        return NotificationCompat.Builder(this, CHANNEL_ID)
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_sticky)
             .setContentTitle(getString(R.string.notification_title))
             .setContentText(statusText(snapshot))
             .setContentIntent(contentIntent)
             .setOngoing(snapshot.isEnabled)
-            .addAction(0, getString(R.string.notification_stop), stopIntent)
             .setOnlyAlertOnce(true)
-            .build()
+
+        if (snapshot.isEnabled) {
+            builder.addAction(0, getString(R.string.notification_stop), stopIntent)
+        }
+
+        return builder.build()
     }
 
     private fun statusText(snapshot: StickyModeSnapshot): String {

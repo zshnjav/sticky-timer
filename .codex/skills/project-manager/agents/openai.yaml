@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Manager"
+  short_description: "Maintain docs/project canon"
+  default_prompt: "Use $project-manager to reconcile docs/project with the current repo state and next steps."

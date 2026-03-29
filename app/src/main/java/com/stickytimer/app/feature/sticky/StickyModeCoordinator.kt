@@ -9,6 +9,8 @@ import com.stickytimer.app.core.settings.StickySettings
 import com.stickytimer.app.core.settings.StickySettingsRepository
 import com.stickytimer.app.core.timer.DisableReason
 import com.stickytimer.app.core.timer.StickyEngineCallbacks
+import com.stickytimer.app.core.timer.StickyPhase
+import com.stickytimer.app.core.timer.StickyPlaybackState
 import com.stickytimer.app.core.timer.StickyTimerEngine
 import com.stickytimer.app.core.timer.SystemStickyTimeSource
 import com.stickytimer.app.platform.tile.StickyTileService
@@ -23,8 +25,13 @@ class StickyModeCoordinator(
     private val settingsRepository: StickySettingsRepository,
     private val accessManager: NotificationAccessManager,
     private val mediaController: ActiveMediaSessionController,
-    private val statusStore: StickyModeStatusStore
+    private val statusStore: StickyModeStatusStore,
+    private val autoEnableScheduler: BedtimeAutoEnableScheduler
 ) {
+    companion object {
+        private const val RESUME_REWIND_MS = 20_000L
+    }
+
     private val appContext = context.applicationContext
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
@@ -33,6 +40,7 @@ class StickyModeCoordinator(
 
     private var playbackCollectionStarted = false
     private var lastPersistedModeEnabled: Boolean? = null
+    private var lastPlaybackState: StickyPlaybackState = StickyPlaybackState.UNKNOWN
 
     private val engine = StickyTimerEngine(
         scope = scope,
@@ -59,6 +67,7 @@ class StickyModeCoordinator(
         scope.launch {
             settingsRepository.settings.collectLatest { settings ->
                 settingsSnapshot = settings
+                autoEnableScheduler.sync(settings)
             }
         }
         scope.launch {
@@ -87,11 +96,25 @@ class StickyModeCoordinator(
             playbackCollectionStarted = true
             scope.launch {
                 mediaController.playbackUpdates.collectLatest { update ->
+                    val previous = lastPlaybackState
+                    lastPlaybackState = update.state
+                    val fromPausedState =
+                        previous == StickyPlaybackState.PAUSED || previous == StickyPlaybackState.STOPPED
+                    val resumedPlayback = fromPausedState && update.state == StickyPlaybackState.PLAYING
+                    val stoppedRecently = statusStore.state.value.phase == StickyPhase.STOPPED_RECENTLY
+
+                    if (resumedPlayback && stoppedRecently) {
+                        mediaController.rewindByMs(RESUME_REWIND_MS)
+                    }
                     engine.onPlaybackStateChanged(update.state, update.timestampMs)
                 }
             }
         }
         engine.enable()
+        scope.launch {
+            // Force a clean bedtime start: if media is already playing, pause it now.
+            mediaController.pauseWithRetry()
+        }
         return true
     }
 

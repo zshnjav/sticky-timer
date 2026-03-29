@@ -18,9 +18,12 @@ class StickySettingsRepository(private val context: Context) {
     val settings: Flow<StickySettings> = context.stickyDataStore.data.map { prefs ->
         StickySettings(
             sessionDurationSec = prefs[Keys.SESSION_DURATION_SEC] ?: StickySettings.DEFAULT_SESSION_DURATION_SEC,
-            fadeDurationSec = prefs[Keys.FADE_DURATION_SEC] ?: StickySettings.DEFAULT_FADE_DURATION_SEC,
-            reengagementWindowSec = prefs[Keys.REENGAGEMENT_WINDOW_SEC] ?: StickySettings.DEFAULT_REENGAGEMENT_WINDOW_SEC,
-            maxActiveWindowMin = prefs[Keys.MAX_ACTIVE_WINDOW_MIN] ?: StickySettings.DEFAULT_MAX_ACTIVE_WINDOW_MIN
+            // Fade duration is intentionally fixed to 10s for a simpler bedtime UX.
+            fadeDurationSec = StickySettings.DEFAULT_FADE_DURATION_SEC,
+            // Re-engagement window is intentionally fixed for simpler UX.
+            reengagementWindowSec = StickySettings.DEFAULT_REENGAGEMENT_WINDOW_SEC,
+            maxActiveWindowMin = prefs[Keys.MAX_ACTIVE_WINDOW_MIN] ?: StickySettings.DEFAULT_MAX_ACTIVE_WINDOW_MIN,
+            autoEnableTimeMinutesOfDay = prefs[Keys.AUTO_ENABLE_TIME_MINUTES_OF_DAY] ?: StickySettings.AUTO_ENABLE_DISABLED
         )
     }
 
@@ -29,19 +32,18 @@ class StickySettingsRepository(private val context: Context) {
     }
 
     suspend fun updateSessionDurationSec(value: Int) {
-        context.stickyDataStore.edit { it[Keys.SESSION_DURATION_SEC] = value.coerceIn(10, 1800) }
-    }
-
-    suspend fun updateFadeDurationSec(value: Int) {
-        context.stickyDataStore.edit { it[Keys.FADE_DURATION_SEC] = value.coerceIn(0, 60) }
-    }
-
-    suspend fun updateReengagementWindowSec(value: Int) {
-        context.stickyDataStore.edit { it[Keys.REENGAGEMENT_WINDOW_SEC] = value.coerceIn(5, 180) }
+        context.stickyDataStore.edit { it[Keys.SESSION_DURATION_SEC] = value.coerceIn(60, 1800) }
     }
 
     suspend fun updateMaxActiveWindowMin(value: Int) {
         context.stickyDataStore.edit { it[Keys.MAX_ACTIVE_WINDOW_MIN] = value.coerceIn(15, 300) }
+    }
+
+    suspend fun updateAutoEnableTimeMinutesOfDay(value: Int?) {
+        context.stickyDataStore.edit {
+            it[Keys.AUTO_ENABLE_TIME_MINUTES_OF_DAY] =
+                value?.coerceIn(0, StickySettings.MINUTES_PER_DAY - 1) ?: StickySettings.AUTO_ENABLE_DISABLED
+        }
     }
 
     suspend fun setLastModeEnabled(enabled: Boolean) {
@@ -50,9 +52,8 @@ class StickySettingsRepository(private val context: Context) {
 
     private object Keys {
         val SESSION_DURATION_SEC: Preferences.Key<Int> = intPreferencesKey("session_duration_sec")
-        val FADE_DURATION_SEC: Preferences.Key<Int> = intPreferencesKey("fade_duration_sec")
-        val REENGAGEMENT_WINDOW_SEC: Preferences.Key<Int> = intPreferencesKey("reengagement_window_sec")
         val MAX_ACTIVE_WINDOW_MIN: Preferences.Key<Int> = intPreferencesKey("max_active_window_min")
+        val AUTO_ENABLE_TIME_MINUTES_OF_DAY: Preferences.Key<Int> = intPreferencesKey("auto_enable_time_minutes_of_day")
         val LAST_MODE_STATE: Preferences.Key<Boolean> = booleanPreferencesKey("last_mode_state")
     }
 }

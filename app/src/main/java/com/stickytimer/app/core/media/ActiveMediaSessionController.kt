@@ -10,6 +10,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.KeyEvent
 import com.stickytimer.app.core.timer.StickyPlaybackState
+import kotlin.math.max
 import com.stickytimer.app.platform.notificationlistener.StickyNotificationListenerService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -95,6 +96,15 @@ class ActiveMediaSessionController(context: Context) {
         if (isCurrentlyPlaying()) {
             dispatchPauseMediaKey()
         }
+    }
+
+    suspend fun rewindByMs(offsetMs: Long) {
+        val controller = activeController ?: return
+        val playbackState = controller.playbackState ?: return
+        val position = playbackState.position
+        if (position < 0L) return
+        val target = max(0L, position - offsetMs.coerceAtLeast(0L))
+        controller.transportControls.seekTo(target)
     }
 
     suspend fun fadeAndPause(fadeDurationMs: Long) {
